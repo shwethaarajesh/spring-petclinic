@@ -21,9 +21,6 @@ pipeline {
         }
 
         stage('SonarQube Analysis') {
-            when {
-                branch 'main'
-            }
             steps {
                 // "My SonarQube Server" matches the name you configured in Jenkins -> Configure System -> SonarQube servers
                 withSonarQubeEnv('Sonarqube-petclinic') {
