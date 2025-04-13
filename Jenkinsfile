@@ -26,7 +26,7 @@ pipeline {
             }
             steps {
                 // "My SonarQube Server" matches the name you configured in Jenkins -> Configure System -> SonarQube servers
-                withSonarQubeEnv('My SonarQube Server') {
+                withSonarQubeEnv('Sonarqube-petclinic') {
                     sh """
                       ./mvnw sonar:sonar \\
                       -Dsonar.projectKey=petclinic \\
