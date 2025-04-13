@@ -22,25 +22,36 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                // "My SonarQube Server" matches the name you configured in Jenkins -> Configure System -> SonarQube servers
                 withSonarQubeEnv('Sonarqube-petclinic') {
-                    // sh """
-                    //   ./mvnw sonar:sonar \\
-                    //   -Dsonar.projectKey=petclinic \\
-                    //   -Dsonar.projectName=PetClinic \\
-                    //   -Dsonar.host.url=\${env.SONAR_HOST_URL} \\
-                    //   -Dsonar.login=\${env.SONAR_AUTH_TOKEN}
-                    // """
                     sh './mvnw sonar:sonar -Dsonar.projectKey=petclinic -Dsonar.projectName=PetClinic'
                 }
             }
         }
+
+        stage('OWASP ZAP Scan') {
+            steps {
+                sh '''
+                    curl -X POST "http://zap:8090/JSON/ascan/action/scan/?url=http://spring-petclinic:8080&recurse=true"
+                    echo "Waiting for scan to finish..."
+                    sleep 30
+                    curl "http://zap:8090/OTHER/core/other/htmlreport/" -o zap-report.html
+                '''
+            }
+        } // 👈 THIS was missing!
     }
 
     post {
         always {
-            // Archive test reports so you can see pass/fail trends in Jenkins
             junit 'target/surefire-reports/*.xml'
+
+            publishHTML(target: [
+                allowMissing: false,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: '.',
+                reportFiles: 'zap-report.html',
+                reportName: 'OWASP ZAP Report'
+            ])
         }
     }
 }
