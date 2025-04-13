@@ -24,13 +24,14 @@ pipeline {
             steps {
                 // "My SonarQube Server" matches the name you configured in Jenkins -> Configure System -> SonarQube servers
                 withSonarQubeEnv('Sonarqube-petclinic') {
-                    sh """
-                      ./mvnw sonar:sonar \\
-                      -Dsonar.projectKey=petclinic \\
-                      -Dsonar.projectName=PetClinic \\
-                      -Dsonar.host.url=\${env.SONAR_HOST_URL} \\
-                      -Dsonar.login=\${env.SONAR_AUTH_TOKEN}
-                    """
+                    // sh """
+                    //   ./mvnw sonar:sonar \\
+                    //   -Dsonar.projectKey=petclinic \\
+                    //   -Dsonar.projectName=PetClinic \\
+                    //   -Dsonar.host.url=\${env.SONAR_HOST_URL} \\
+                    //   -Dsonar.login=\${env.SONAR_AUTH_TOKEN}
+                    // """
+                    sh './mvnw sonar:sonar -Dsonar.projectKey=petclinic -Dsonar.projectName=PetClinic'
                 }
             }
         }
