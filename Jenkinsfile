@@ -28,21 +28,26 @@ pipeline {
             }
         }
 
+        stage('Start PetClinic') {
+            steps {
+                sh '''
+                # Start the app in the background:
+                nohup java -jar target/spring-petclinic-*.jar > app.log 2>&1 &
+                # Give it some time to fully start
+                sleep 10
+                '''
+            }
+        }
+
         stage('OWASP ZAP Scan') {
             steps {
-                // sh '''
-                //     curl -X POST "http://zap:8090/JSON/ascan/action/scan/?url=http://spring-petclinic:8080&recurse=true"
-                //     echo "Waiting for scan to finish..."
-                //     sleep 30
-                //     curl "http://zap:8090/OTHER/core/other/htmlreport/" -o zap-report.html
-                // '''
                 sh '''
-                    curl -X POST "http://zap:8090/JSON/ascan/action/scan/?url=http://spring-petclinic:8080&recurse=true&apikey=devops123"
-                    sleep 30
-                    curl "http://zap:8090/OTHER/core/other/htmlreport/?apikey=devops123" -o zap-report.html
-                    '''
+                curl -X POST "http://zap:8090/JSON/ascan/action/scan/?url=http://host.docker.internal:8080&recurse=true"
+                sleep 30
+                curl "http://zap:8090/OTHER/core/other/htmlreport/" -o zap-report.html
+                '''
             }
-        } // 👈 THIS was missing!
+        }
     }
 
     post {
