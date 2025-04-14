@@ -30,12 +30,17 @@ pipeline {
 
         stage('OWASP ZAP Scan') {
             steps {
+                // sh '''
+                //     curl -X POST "http://zap:8090/JSON/ascan/action/scan/?url=http://spring-petclinic:8080&recurse=true"
+                //     echo "Waiting for scan to finish..."
+                //     sleep 30
+                //     curl "http://zap:8090/OTHER/core/other/htmlreport/" -o zap-report.html
+                // '''
                 sh '''
-                    curl -X POST "http://zap:8090/JSON/ascan/action/scan/?url=http://spring-petclinic:8080&recurse=true"
-                    echo "Waiting for scan to finish..."
+                    curl -X POST "http://zap:8090/JSON/ascan/action/scan/?url=http://spring-petclinic:8080&recurse=true&apikey=devops123"
                     sleep 30
-                    curl "http://zap:8090/OTHER/core/other/htmlreport/" -o zap-report.html
-                '''
+                    curl "http://zap:8090/OTHER/core/other/htmlreport/?apikey=devops123" -o zap-report.html
+                    '''
             }
         } // 👈 THIS was missing!
     }
