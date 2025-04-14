@@ -28,23 +28,14 @@ pipeline {
             }
         }
 
-        stage('Start PetClinic') {
+       stage('OWASP ZAP Scan') {
             steps {
                 sh '''
-                # Start the app in the background:
-                nohup java -jar target/spring-petclinic-*.jar > app.log 2>&1 &
-                # Give it some time to fully start
-                sleep 10
-                '''
-            }
-        }
-
-        stage('OWASP ZAP Scan') {
-            steps {
-                sh '''
-                curl -X POST "http://zap:8090/JSON/ascan/action/scan/?url=http://host.docker.internal:8080&recurse=true"
-                sleep 30
-                curl "http://zap:8090/OTHER/core/other/htmlreport/" -o zap-report.html
+                    echo "Starting ZAP scan..."
+                    curl -X POST "http://zap:8090/JSON/ascan/action/scan/?url=http://spring-petclinicapp:8080&recurse=true"
+                    echo "Waiting for scan to finish..."
+                    sleep 30
+                    curl "http://zap:8090/OTHER/core/other/htmlreport/" -o zap-report.html
                 '''
             }
         }
